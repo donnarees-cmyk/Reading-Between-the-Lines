@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading Between the Lines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1d2b64; --blue:#3d63dd; --sky:#e8eeff; --orange:#ff7a1a; --peach:#fff1e6; --yellow:#ffd93b;
+  --green:#22874c; --goodbg:#e2f5e9; --red:#c7353a; --badbg:#fde7e7; --ink:#1c2233; --muted:#5a6275;
+  --line:#e1e6f2; --card:#fff; --hl:#fff3b0; --exp:#2f6fe0; --expbg:#e3edff; --imp:#e06a12; --impbg:#fff0e2;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Nunito,system-ui,-apple-system,sans-serif;color:var(--ink);font-size:18px;line-height:1.6;min-height:100vh;
+  background:linear-gradient(180deg,#dfe7ff 0%,#f4f6ff 40%,#fff8f1 100%);background-attachment:fixed}
+button{font:inherit;cursor:pointer}
+header{background:var(--navy);color:#fff;padding:10px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;box-shadow:0 3px 12px rgba(0,0,0,.2)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{font-size:1.9rem;line-height:1}
+.brand h1{font-family:'Baloo 2',sans-serif;font-size:1.3rem;margin:0;line-height:1.1}
+.chip{display:inline-block;background:var(--yellow);color:#3a2f00;font-weight:800;font-size:.72rem;padding:2px 9px;border-radius:999px;margin-top:2px}
+.voicebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem;font-weight:700}
+.seg{display:flex;background:rgba(255,255,255,.16);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:#fff;font-weight:800;padding:5px 11px;border-radius:999px;font-size:.85rem}
+.seg button.on{background:#fff;color:var(--navy)}
+.stopbtn{border:0;background:var(--orange);color:#fff;font-weight:800;border-radius:999px;padding:6px 12px;font-size:.85rem;display:none}
+.stopbtn.show{display:inline-block}
+main{max-width:1240px;margin:0 auto;padding:16px 16px 60px}
+.card{background:var(--card);border-radius:22px;box-shadow:0 8px 24px rgba(29,43,100,.12);padding:24px;border:3px solid #fff}
+.center{max-width:780px;margin:0 auto}
+h2{font-family:'Baloo 2',sans-serif;color:var(--navy);font-size:1.8rem;margin:0 0 8px;line-height:1.2}
+h3{font-family:'Baloo 2',sans-serif;color:var(--blue);margin:0 0 6px;font-size:1.25rem}
+.muted{color:var(--muted)}
+.big{border:0;border-radius:16px;padding:13px 24px;font-weight:800;font-size:1.08rem;background:var(--blue);color:#fff;box-shadow:0 5px 0 #2443a8;transition:transform .08s}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #2443a8}
+.big.orange{background:var(--orange);box-shadow:0 5px 0 #c25600}
+.big.yellow{background:var(--yellow);color:#3a2f00;box-shadow:0 5px 0 #c9a600}
+.big.green{background:var(--green);box-shadow:0 5px 0 #165e34}
+.big:disabled{opacity:.45;cursor:not-allowed}
+.ghost{border:2px solid var(--blue);background:#fff;color:var(--blue);border-radius:12px;padding:8px 14px;font-weight:800;font-size:.95rem}
+.ghost:disabled{opacity:.4;cursor:default}
+.speak{border:0;background:var(--sky);color:var(--navy);border-radius:999px;padding:6px 14px;font-weight:800;font-size:.9rem;display:inline-flex;align-items:center;gap:6px}
+.speak:hover{background:#d6e0ff}
+.speak.sm{padding:3px 10px;font-size:.8rem}
+input[type=text],textarea{font:inherit;font-size:1.05rem;padding:10px 12px;border-radius:12px;border:3px solid var(--line);width:100%;background:#fff;color:var(--ink)}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--blue)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.tip{background:#fff8dc;border-left:6px solid var(--yellow);border-radius:12px;padding:12px 16px;margin:14px 0}
+.exp{color:var(--exp);font-weight:800}
+.imp{color:var(--imp);font-weight:800}
+.tag{display:inline-block;border-radius:8px;padding:1px 9px;font-weight:800;font-size:.85rem}
+.tag.e{background:var(--expbg);color:var(--exp)}
+.tag.i{background:var(--impbg);color:var(--imp)}
+
+/* stations */
+.stations{display:flex;gap:6px;margin:0 auto 14px;flex-wrap:wrap;max-width:1240px}
+.st{flex:1;min-width:104px;background:#fff;border:3px solid var(--line);border-radius:14px;padding:5px 8px;font-weight:800;font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:5px;text-align:left}
+.st.now{border-color:var(--blue);color:var(--navy);box-shadow:0 0 0 3px #cfdcff}
+.st.done{background:var(--goodbg);border-color:var(--green);color:var(--green)}
+.st .ic{font-size:1.1rem}
+
+/* learn */
+.lessonbar{display:flex;gap:6px;margin:6px 0 14px}
+.lessonbar span{flex:1;height:8px;border-radius:99px;background:var(--line)}
+.lessonbar span.on{background:var(--blue)}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media (max-width:640px){.twocol{grid-template-columns:1fr}}
+.box{border-radius:16px;padding:14px;border:3px solid var(--line)}
+.box.e{border-color:var(--exp);background:var(--expbg)}
+.box.i{border-color:var(--imp);background:var(--impbg)}
+.box .lab{font-family:'Baloo 2';font-weight:800;font-size:1.1rem}
+.phone{max-width:360px;margin:10px auto;background:#f2f4fa;border-radius:22px;padding:14px;border:3px solid var(--line)}
+.bubble{background:#fff;border-radius:16px 16px 16px 4px;padding:10px 14px;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.flip{border:3px solid var(--line);border-radius:16px;padding:14px;background:#fff;text-align:left;min-height:110px;width:100%;transition:all .25s}
+.flip .front{font-family:'Baloo 2';font-weight:800;font-size:1.3rem;color:var(--navy)}
+.flip .back{display:none;margin-top:4px}
+.flip.open{background:var(--sky);border-color:var(--blue)}
+.flip.open .back{display:block}
+.reveal{display:none}
+.reveal.show{display:block;animation:fade .4s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+.sortitem{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border:3px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+.sortitem.ok{border-color:var(--green);background:var(--goodbg)}
+.sortitem.no{border-color:var(--red);background:var(--badbg)}
+.sortitem .why{flex-basis:100%;font-size:.92rem;color:var(--muted)}
+.pill{border:2px solid var(--blue);background:#fff;color:var(--blue);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.88rem}
+.pill.o{border-color:var(--imp);color:var(--imp)}
+.starters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.starters span{border-radius:10px;padding:4px 12px;font-weight:700}
+
+/* article / question layout */
+.quizwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.ppanel{position:sticky;top:84px;max-height:calc(100vh - 104px);overflow:auto;padding:18px}
+.ppanel .tools{position:sticky;top:-18px;background:#fff;padding:6px 0 8px;z-index:2;display:flex;gap:8px;flex-wrap:wrap;border-bottom:2px dashed var(--line);margin-bottom:6px}
+.togglep,.closep{display:none!important}
+@media (max-width:860px){
+  .quizwrap{grid-template-columns:1fr}
+  .ppanel{position:fixed;inset:70px 10px 10px 10px;max-height:none;z-index:40;display:none}
+  .ppanel.open{display:block}
+  .togglep,.closep{display:inline-flex!important}
+}
+.art .atitle{font-family:'Baloo 2',sans-serif;font-size:1.55rem;color:var(--navy);margin:0;line-height:1.2}
+.art .byline{color:var(--muted);font-size:.88rem;margin-bottom:8px}
+.art h4{font-family:'Baloo 2',sans-serif;color:var(--blue);font-size:1.1rem;margin:14px 0 2px}
+.para{display:grid;grid-template-columns:34px 1fr;gap:8px;padding:8px 10px;border-radius:12px;transition:background .25s}
+.para .num{font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;background:var(--blue);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:.9rem;margin-top:3px}
+.para p{margin:0 0 4px}
+.para.reading{background:var(--hl)}
+.s{border-radius:6px;transition:background .2s}
+.evmode .s{cursor:pointer;border-bottom:2px dotted #9fb3ee}
+.evmode .s:hover{background:#e5ecff}
+.s.evsel{background:#cddcff;border-bottom-color:var(--blue)}
+.s.evok{background:#c9f0d6;border-bottom:2px solid var(--green)}
+.s.evbad{background:var(--badbg);border-bottom:2px solid var(--red)}
+.arttabs{display:flex;gap:6px}
+.arttabs button{border:2px solid var(--line);background:#fff;border-radius:10px;padding:4px 10px;font-weight:800;font-size:.85rem;color:var(--muted)}
+.arttabs button.on{border-color:var(--blue);color:var(--navy);background:var(--sky)}
+.meter{height:14px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:10px}
+.meter div{height:100%;background:linear-gradient(90deg,var(--blue),var(--orange));transition:width .5s}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:.74rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:var(--muted);padding:0}
+.dot.cur{border-color:var(--navy);color:var(--navy);box-shadow:0 0 0 3px #cfdcff}
+.dot.right{background:var(--green);border-color:var(--green);color:#fff}
+.dot.wrong{background:var(--red);border-color:var(--red);color:#fff}
+.dot.wrote{background:var(--blue);border-color:var(--blue);color:#fff}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.qnum{font-family:'Baloo 2',sans-serif;font-weight:800;color:var(--navy);font-size:1.12rem}
+.score{font-weight:800;color:var(--green);background:var(--goodbg);border-radius:999px;padding:3px 12px;font-size:.9rem}
+.stem{font-size:1.13rem;font-weight:700;margin:8px 0}
+.quote{background:#f3f6ff;border-left:5px solid var(--blue);padding:8px 12px;border-radius:8px;font-style:italic;margin:8px 0}
+.choices{display:flex;flex-direction:column;gap:9px;margin:10px 0 14px}
+.choice{display:grid;grid-template-columns:36px 1fr;gap:10px;align-items:center;text-align:left;border:3px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;font-size:1.02rem;color:var(--ink)}
+.choice:hover:not(:disabled){border-color:var(--blue)}
+.choice .let{width:32px;height:32px;border-radius:50%;background:var(--sky);color:var(--navy);font-weight:800;display:flex;align-items:center;justify-content:center}
+.choice.sel{border-color:var(--blue);background:#edf2ff}
+.choice.sel .let{background:var(--blue);color:#fff}
+.choice.isright{border-color:var(--green);background:var(--goodbg)}
+.choice.isright .let{background:var(--green);color:#fff}
+.choice.iswrong{border-color:var(--red);background:var(--badbg)}
+.choice.iswrong .let{background:var(--red);color:#fff}
+.choice:disabled{cursor:default}
+.evbox{border:3px dashed var(--blue);border-radius:14px;padding:12px;margin:10px 0;background:#f6f8ff;min-height:60px}
+.evbox.empty{color:var(--muted);font-style:italic}
+.fb{border-radius:14px;padding:12px 16px;margin:10px 0;font-weight:600}
+.fb.good{background:var(--goodbg);border:2px solid var(--green)}
+.fb.bad{background:var(--badbg);border:2px solid var(--red)}
+.fb.info{background:var(--sky);border:2px solid var(--blue)}
+.fb strong{font-family:'Baloo 2',sans-serif;font-size:1.12rem}
+.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px}
+.pop{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);font-family:'Baloo 2',sans-serif;font-size:2.3rem;font-weight:800;color:var(--blue);pointer-events:none;animation:pop 1.1s forwards;z-index:60;text-shadow:0 3px 0 #fff}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-110%) scale(1)}}
+
+/* writing */
+.lvl{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.lvl button{border:3px solid var(--line);background:#fff;border-radius:14px;padding:8px 14px;font-weight:800;color:var(--muted)}
+.lvl button.on{border-color:var(--orange);background:var(--peach);color:#8a3b00}
+.frame{background:#fbfcff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0;line-height:2.3}
+.frame input{display:inline-block;width:auto;min-width:180px;max-width:100%;padding:4px 8px;font-size:1rem;border-width:2px;vertical-align:middle;line-height:1.3}
+.frame .fl{font-family:'Baloo 2';font-weight:800;color:var(--blue);display:block;line-height:1.4}
+.preview{background:#fff;border:3px solid var(--blue);border-radius:16px;padding:14px 16px;margin:12px 0;white-space:pre-wrap}
+.check{display:flex;gap:10px;align-items:flex-start;margin:6px 0;font-weight:600}
+.check input{width:22px;height:22px;margin-top:3px;flex-shrink:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chips button{border:2px solid var(--orange);background:#fff;color:#a34700;border-radius:999px;padding:3px 10px;font-weight:800;font-size:.85rem}
+
+/* infographic */
+.ig{border-radius:22px;padding:20px;background:linear-gradient(135deg,#eef3ff,#fff4ea);border:4px solid var(--navy);margin-top:14px}
+.ig h2{text-align:center;font-size:2rem;margin-bottom:4px}
+.ig .sub{text-align:center;color:var(--muted);margin-bottom:12px}
+.ig .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.ig .grid{grid-template-columns:1fr}}
+.ig .col{background:#fff;border-radius:16px;padding:12px}
+.ig .col h3{text-align:center}
+.ig .itm{border-radius:12px;padding:10px 12px;margin:8px 0}
+.ig .itm.e{background:var(--expbg);border-left:6px solid var(--exp)}
+.ig .itm.i{background:var(--impbg);border-left:6px solid var(--imp)}
+.ig .take{background:var(--navy);color:#fff;border-radius:16px;padding:12px 16px;margin-top:12px;text-align:center;font-weight:700}
+.iconpick{display:flex;gap:6px;flex-wrap:wrap}
+.iconpick button{border:2px solid var(--line);background:#fff;border-radius:10px;font-size:1.3rem;padding:2px 8px}
+.iconpick button.on{border-color:var(--blue);background:var(--sky)}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:640px){.formgrid{grid-template-columns:1fr}}
+.formgrid label{font-weight:800;font-size:.92rem;display:block;margin-bottom:2px}
+
+/* results / teacher */
+.badge{font-size:4.5rem;line-height:1;margin:6px 0}
+.bigscore{font-family:'Baloo 2',sans-serif;font-size:3rem;color:var(--navy);font-weight:800;line-height:1}
+.ritem{border-radius:12px;padding:8px 12px;font-size:.95rem;border:2px solid var(--line);margin:6px 0;text-align:left}
+.ritem.r{border-color:var(--green);background:var(--goodbg)}
+.ritem.w{border-color:var(--red);background:var(--badbg)}
+.ritem.t{border-color:var(--blue);background:#f4f7ff}
+.modal{position:fixed;inset:0;background:rgba(20,26,50,.55);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto}
+.modal .card{max-width:960px;width:100%}
+table{border-collapse:collapse;width:100%;font-size:.93rem;margin:8px 0}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--sky)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+footer{text-align:center;font-size:.8rem;color:var(--muted);padding:10px}
+footer button{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.8rem}
+@media print{
+  header,footer,.stations,.noprint{display:none!important}
+  body{background:#fff}
+  .card{box-shadow:none;border:0;padding:0}
+  .ig{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <span class="logo" aria-hidden="true">🔎</span>
+    <div>
+      <h1>Reading Between the Lines</h1>
+      <span class="chip">Grade 6 · Explicit &amp; Implicit Meaning in Nonfiction</span>
+    </div>
+  </div>
+  <div class="voicebar">
+    <span>🔊 Voice:</span>
+    <div class="seg" id="voiceSeg"><button data-v="female" class="on">Female</button><button data-v="male">Male</button><button data-v="mixed">Mixed</button></div>
+    <div class="seg" id="rateSeg"><button data-r="0.8">Slow</button><button data-r="0.95" class="on">Normal</button></div>
+    <button class="stopbtn" id="stopBtn" onclick="stopSpeech()">■ Stop</button>
+  </div>
+</header>
+<main id="app"></main>
+<footer>Florida B.E.S.T. Grade 6 ELA · <button onclick="teacherKey()">Teacher answer key</button> · <button onclick="teacherReset()">Teacher reset</button></footer>
+<div id="modalRoot"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ===================== SETTINGS ===================== */
+const TEACHER_PIN = "1234";            // change to your own PIN
+const STORE = "explicitImplicit_v1_";
+
+/* ===================== ARTICLES ===================== */
+const ARTICLES = {
+ A1:{ title:"Back to School, Back to Bed: Doctors Share Sleep Tips", short:"Sleep article", byline:"Informational article",
+  p:[
+   {s:["Summer is a time for late-night movies, sleepovers, and sleeping in.","But when the first day of school arrives, many students find that their bodies are not ready for early alarms.","Doctors say a few simple changes can make the switch much easier."]},
+   {h:"How Much Sleep Do You Need?", s:["The American Academy of Sleep Medicine is a group of doctors who study sleep.","It recommends that children ages 6 to 12 get 9 to 12 hours of sleep every night.","Teens ages 13 to 18 need 8 to 10 hours.","That means a sixth grader who wakes up at 6:30 a.m. should be asleep by about 9:30 p.m. or earlier."]},
+   {h:"Why Summer Makes It Hard", s:["During summer break, there is often no reason to wake up early.","Bedtimes can slowly shift later and later, sometimes by two or three hours.","Your body has an internal clock that gets used to this new schedule.","When school starts, that clock is still set to summer time, so falling asleep early can feel almost impossible."]},
+   {h:"Tips From the Doctors", s:["Doctors suggest starting to fix your schedule one to two weeks before school begins.","Move your bedtime and wake-up time about 15 minutes earlier every few days.","Turn off phones, tablets, and video games at least 30 minutes before bed, because the bright light from screens can trick your brain into staying awake.","Try to go to bed and wake up at about the same time every day, even on weekends.","Getting sunlight in the morning can also help reset your body's clock."]},
+   {h:"Why It Matters", s:["Sleep is not just about feeling rested.","Doctors say that students who get enough sleep are better able to pay attention, remember what they learn, and control their moods.","Students who do not get enough sleep may feel cranky and have trouble focusing in class.","A good night's sleep, it turns out, may be one of the best school supplies you can have."]}
+  ]},
+ A2:{ title:"Over Half of What Americans Eat Is Ultra-Processed, CDC Says", short:"Food article", byline:"Informational article",
+  p:[
+   {s:["Think about what you ate yesterday.","Did you have chips, a frozen pizza, a soda, or a bowl of sugary cereal?","If so, you are not alone."]},
+   {h:"What the Report Found", s:["In August 2025, the Centers for Disease Control and Prevention, or CDC, released a report about what people in the United States eat.","The report found that about 55 percent of the calories Americans eat come from ultra-processed foods.","For kids and teens ages 1 to 18, that number rises to about 62 percent.","For adults, it is about 53 percent."]},
+   {h:"What Are Ultra-Processed Foods?", s:["Ultra-processed foods are made in factories using many steps and ingredients.","They often include added sugar, salt, fat, artificial colors, flavors, and preservatives that help them last a long time on the shelf.","Many of these ingredients are things you would not find in a home kitchen.","Common examples include packaged snacks, candy, sugary drinks, chicken nuggets, and hot dogs."]},
+   {h:"Why People Eat Them", s:["Ultra-processed foods are popular for many reasons.","They are usually quick to prepare, easy to carry, and often cost less than fresh foods.","They are also designed to taste very good, which can make it hard to stop eating them.","Companies spend billions of dollars advertising these products.","Ads often use bright colors, cartoon characters, famous athletes, and social media stars to make snacks and drinks seem fun and cool."]},
+   {h:"Why It Matters", s:["Researchers have found that eating a lot of ultra-processed food is linked to health problems such as obesity, heart disease, and type 2 diabetes.","Health experts do not say you must never eat these foods.","Instead, they suggest making simple swaps, like choosing fruit instead of candy, water instead of soda, or a homemade sandwich instead of a packaged snack.","Small changes, they say, can add up to big differences over time."]}
+  ]}
+};
+function sentText(id){ const [a,p,s] = id.split("-"); return ARTICLES[a].p[+p].s[+s]; }
+
+/* ===================== LEARN ===================== */
+const SORT = [
+ {t:"The Florida panther is Florida's state animal.", a:"e", why:"Explicit. The text says this word for word."},
+ {t:"Fewer than 250 adult panthers live in the wild.", a:"e", why:"Explicit. This number is stated directly."},
+ {t:"Busy roads are a danger to panthers.", a:"i", why:"Implicit. The text says many are hit by cars, so you infer roads are dangerous."},
+ {t:"Florida panthers are at risk of disappearing.", a:"i", why:"Implicit. A very small number left plus many being killed suggests they are at risk."}
+];
+const LESSON = [
+ { title:"Explicit vs. Implicit",
+   say:"Explicit versus implicit. When something is explicit, the author tells you directly. You can point right to it in the text. When something is implicit, it is not stated. You figure it out using clues from the text plus what you already know. This is called making an inference. Look at this text message from Mom. Dinner is at 6. Don't be late again. What is explicit? Dinner is at 6. What is implicit? The word again is a clue. You can infer that you were late to dinner before.",
+   html:`<div class="twocol">
+     <div class="box e"><div class="lab">✅ Explicit</div>Clearly <strong>stated</strong> in the text. The author tells you directly. You can <strong>point to it</strong>.</div>
+     <div class="box i"><div class="lab">💡 Implicit</div><strong>Not</strong> directly stated. You figure it out using <strong>clues + what you know</strong>. This is called <strong>inferring</strong>.</div></div>
+   <div class="phone"><div class="muted" style="font-size:.8rem;font-weight:800">Mom 📱</div><div class="bubble">Dinner's at 6. Don't be late <strong>again</strong>.</div></div>
+   <div class="row" style="justify-content:center"><button class="pill" onclick="revealEx('r1')">✅ What's explicit?</button><button class="pill o" onclick="revealEx('r2')">💡 What's implicit?</button></div>
+   <div class="reveal" id="r1"><div class="box e" style="margin-top:10px"><strong>Explicit:</strong> Dinner is at 6:00.</div></div>
+   <div class="reveal" id="r2"><div class="box i" style="margin-top:10px"><strong>Implicit:</strong> The clue word <em>"again"</em> tells you that you were late to dinner before.</div></div>` },
+ { title:"Key Vocabulary", vocab:true,
+   say:"Key vocabulary. Tap each card to flip it. Explicit means clearly stated in the text. Implicit means not directly stated, so the reader figures it out. Inference means a smart conclusion based on text clues and what you know. Textual evidence means the exact words or details from the text that prove your answer.",
+   html:`<p>Tap each card to flip it. Tap 🔊 to hear it.</p>
+   <div class="twocol" id="vocab"></div>` },
+ { title:"Watch Me Think",
+   say:"Watch me think. Here is a sentence. The cafeteria line wrapped around the gym, and the pizza was gone by 11:45. First, what does the text say explicitly? The pizza was gone by 11:45, and the line was very long. Now, what can I infer? A long line and food running out early are clues. I know that food runs out when lots of people want it. So I can infer that pizza day is very popular at this school.",
+   html:`<div class="quote" style="font-size:1.1rem">"The cafeteria line wrapped around the gym, and the pizza was gone by 11:45."</div>
+   <button class="pill" onclick="revealEx('t1')">Step 1: What does it SAY?</button>
+   <div class="reveal" id="t1"><div class="box e" style="margin:8px 0"><strong>Explicit:</strong> The line was very long. The pizza was gone by 11:45.<br><em class="muted">I can point to these words.</em></div>
+     <button class="pill o" onclick="revealEx('t2')">Step 2: What can I INFER?</button></div>
+   <div class="reveal" id="t2"><div class="box i" style="margin:8px 0"><strong>Clues:</strong> long line + pizza ran out early<br><strong>What I know:</strong> Food runs out when lots of people want it.<br><strong>Inference:</strong> Pizza day is very popular at this school! 🍕</div></div>` },
+ { title:"Stated or Inferred?", sort:true,
+   say:"Stated or inferred? Read the text about the Florida panther. The Florida panther is Florida's state animal. Fewer than 250 adult panthers live in the wild today. Many are hit by cars each year as they cross busy roads. For each statement, choose Explicit if the text says it directly, or Implicit if you have to infer it.",
+   html:`<div class="quote">🐆 "The Florida panther is Florida's state animal. Fewer than 250 adult panthers live in the wild today. Many are hit by cars each year as they cross busy roads."</div>
+   <div id="sortbox"></div>` },
+ { title:"Proving It With Evidence",
+   say:"Proving it with evidence. Whether an idea is explicit or implicit, you must back it up with textual evidence. For explicit ideas, use starters like: The text states, or According to the article. For implicit ideas, use starters like: This suggests that, or I can infer that, because the text says. Remember: an inference must be based on clues in the text, not just your opinion. As you read today, look for both kinds of meaning.",
+   html:`<p>Both kinds of answers need <strong>textual evidence</strong>, the exact words or details that prove you're right.</p>
+   <div class="twocol">
+     <div class="box e"><div class="lab">✅ For explicit ideas</div><div class="starters"><span class="tag e">"The text states…"</span><span class="tag e">"According to the article…"</span></div></div>
+     <div class="box i"><div class="lab">💡 For implicit ideas</div><div class="starters"><span class="tag i">"This suggests that…"</span><span class="tag i">"I can infer ___ because the text says ___."</span></div></div></div>
+   <div class="tip">⚠️ An inference must come from <strong>clues in the text</strong>, not just your opinion.<br>❌ "Kids stay up late because they're lazy." (no proof!)</div>
+   <p>Next you'll read <strong>two articles about kids' health</strong>, one about sleep and one about food. 📚</p>` }
+];
+const VOCAB = [
+ ["Explicit","Clearly stated in the text. The author tells you directly."],
+ ["Implicit","Not directly stated. The reader figures it out using clues and background knowledge."],
+ ["Inference","A smart conclusion based on text clues + what you already know."],
+ ["Textual Evidence","The exact words, facts, or details from the text that prove your answer."]
+];
+
+/* ===================== QUESTION SETS =====================
+ t: mc (multiple choice) | ev (tap the evidence sentence in the article) | sr (short written response, not auto-scored)
+ kind: "e" explicit / "i" implicit label shown to students */
+const SETS = {
+ a1:{ label:"Article 1", arts:["A1"], qs:[
+  {id:"a1q1", t:"mc", kind:"e", q:"What does the article explicitly say about how many hours of sleep children ages 6 to 12 should get each night?",
+   c:["7 to 8 hours","8 to 10 hours","9 to 12 hours","At least 12 hours"], a:2,
+   ex:"Paragraph 2 says children ages 6 to 12 need 9 to 12 hours. Watch out: 8 to 10 hours is for teens ages 13 to 18, not sixth graders!"},
+  {id:"a1q2", t:"ev", kind:"e", art:"A1", q:"Tap the sentence in the article that best supports your answer.", accept:["A1-1-1"],
+   ex:"This sentence states the 9 to 12 hours recommendation word for word. That's what makes it explicit."},
+  {id:"a1q3", t:"mc", kind:"i", q:"Based on the article, what can you infer about why it might be hard for students to adjust to school sleep schedules after summer?",
+   c:["They have medical problems that prevent good sleep.","Summer routines often change bedtime habits.","Schools do not teach students about sleep.","Kids naturally need less sleep in the summer."], a:1,
+   ex:"The article never says \"summer habits make it hard\" in those words, but the clues about bedtimes shifting later and the body's clock lead you there."},
+  {id:"a1q4", t:"ev", kind:"i", art:"A1", q:"Tap a detail from the article that supports your inference.", accept:["A1-2-0","A1-2-1","A1-2-2","A1-2-3","A1-0-1"],
+   ex:"Paragraph 3 explains that bedtimes shift later in summer and the body's internal clock gets used to it. Any of those sentences supports the inference."},
+  {id:"a1q5", t:"mc", kind:"i", q:"The author ends with this sentence. What does the author most likely want readers to understand?", quote:"A good night's sleep, it turns out, may be one of the best school supplies you can have.",
+   c:["Students should sleep instead of buying school supplies.","Sleep is just as important for doing well in school as pencils and notebooks.","Students should bring a pillow to school.","School supplies help students fall asleep."], a:1,
+   ex:"The author compares sleep to a school supply to suggest that sleep helps you succeed in school. The author implies this message instead of stating it."},
+  {id:"a1q6", t:"sr", q:"What is ONE recommendation doctors make to help students improve their sleep before school starts? Is this advice explicitly stated or inferred? Explain.",
+   starter:"One recommendation doctors make is ______. This advice is explicitly stated because ______.",
+   sample:"One recommendation doctors make is to turn off phones and video games at least 30 minutes before bed. This advice is explicitly stated because paragraph 4 says, \"Turn off phones, tablets, and video games at least 30 minutes before bed.\" I can point right to it in the text."}
+ ]},
+ a2:{ label:"Article 2", arts:["A2"], qs:[
+  {id:"a2q1", t:"mc", kind:"e", q:"According to the article, about what percentage of the calories kids and teens eat come from ultra-processed foods?",
+   c:["42 percent","53 percent","62 percent","75 percent"], a:2,
+   ex:"Paragraph 2 says the number rises to about 62 percent for kids and teens. Careful: 53 percent is for adults."},
+  {id:"a2q2", t:"ev", kind:"e", art:"A2", q:"Tap the sentence in the article that provides this information.", accept:["A2-1-2"],
+   ex:"\"For kids and teens ages 1 to 18, that number rises to about 62 percent.\" This is an exact statistic, so it's explicit."},
+  {id:"a2q3", t:"mc", kind:"i", q:"What inference can you make about the relationship between advertising and kids' food choices?",
+   c:["Kids are not affected by advertising.","Kids only eat what their parents eat.","Advertising influences how kids see and choose ultra-processed foods.","Ultra-processed foods are only advertised to adults."], a:2,
+   ex:"The article doesn't say \"ads change what kids eat,\" but it says companies spend billions and use cartoons and social media stars to make snacks seem cool. That suggests ads are influencing kids."},
+  {id:"a2q4", t:"ev", kind:"i", art:"A2", q:"Tap the sentence in the article that best supports your inference about advertising.", accept:["A2-3-4","A2-3-3"],
+   ex:"Using cartoon characters, athletes, and social media stars to make food seem \"fun and cool\" are clues that ads are aimed at young people."},
+  {id:"a2q5", t:"mc", kind:"e", q:"Which statement is EXPLICITLY stated in the article?",
+   c:["Busy families choose ultra-processed foods to save time.","Ultra-processed foods often cost less than fresh foods.","Kids eat more ultra-processed food than adults because of ads.","The author thinks soda should be banned."], a:1,
+   ex:"Paragraph 4 directly says these foods \"often cost less than fresh foods.\" The others are inferences or ideas the article never says."},
+  {id:"a2q6", t:"sr", q:"What is ONE reason people might keep eating ultra-processed foods even if they know about the health risks? Use a quote or detail from the text to support your answer.",
+   starter:"One reason people might keep eating ultra-processed foods is ______. The article says, \"______.\" This suggests that ______.",
+   sample:"One reason people might keep eating ultra-processed foods is that they are easy and taste good. The article says they are \"designed to taste very good, which can make it hard to stop eating them.\" This suggests that even when people know about the risks, the taste makes these foods hard to give up."}
+ ]},
+ compare:{ label:"Compare & Connect", arts:["A1","A2"], qs:[
+  {id:"cq1", t:"mc", q:"Which article includes more explicitly stated statistics (numbers and percentages)?",
+   c:["The sleep article","The food article","Both have the same number","Neither article uses numbers"], a:1,
+   ex:"The food article gives three percentages from the CDC report (55, 62, and 53 percent). The sleep article has a few numbers, but fewer statistics."},
+  {id:"cq2", t:"sr", q:"How do the numbers in the food article support the author's message?",
+   starter:"The food article states that ______. These numbers support the author's message because ______.",
+   sample:"The food article states that about 62 percent of kids' calories come from ultra-processed foods. These numbers support the author's message because they show that this is a big, common problem, not just something a few people do. More than half is a lot!"},
+  {id:"cq3", t:"mc", kind:"i", q:"Which inference connects BOTH articles?",
+   c:["Doctors want students to stop having fun in the summer.","Most students already make healthy choices.","Everyday habits, like bedtimes and snack choices, can affect young people's health.","Advertising causes students to stay up late."], a:2,
+   ex:"Neither article states this exactly, but both describe daily habits (late bedtimes, processed snacks) and how they affect health. That's a cross-text inference."},
+  {id:"cq4", t:"sr", q:"How are both articles similar in the problems they describe? How is the focus different? Use one detail from EACH article.",
+   starter:"Both articles describe ______. The sleep article focuses on ______, such as \"______.\" The food article focuses on ______, such as \"______.\"",
+   sample:"Both articles describe habits that can hurt kids' health. The sleep article focuses on getting enough rest for school, such as \"children ages 6 to 12 get 9 to 12 hours of sleep every night.\" The food article focuses on what kids eat, such as \"that number rises to about 62 percent.\" The sleep article gives tips in a helpful tone, while the food article uses more statistics."}
+ ]},
+ check:{ label:"Final Check", arts:[], oneTry:true, qs:[
+  {id:"k1", t:"mc", q:"Which statement best describes IMPLICIT meaning?",
+   c:["Information the author states directly","An idea the reader figures out using clues and background knowledge","The title and headings of an article","A fact with a number in it"], a:1, ex:"Implicit meaning is not stated. You infer it from clues plus what you know."},
+  {id:"k2", t:"mc", kind:"e", q:"Which information is EXPLICITLY stated in this sentence?", quote:"The Lakeland Public Library is open until 5:00 p.m. on Saturdays and is closed on Sundays.",
+   c:["The library is a popular place.","The library closes at 5:00 p.m. on Saturdays.","The library needs more workers.","Most people visit on Saturdays."], a:1, ex:"The closing time is stated word for word. The other choices are guesses."},
+  {id:"k3", t:"mc", kind:"i", q:"What can you infer from this sentence?", quote:"Maria checked the weather app, frowned, and grabbed her raincoat on the way out the door.",
+   c:["Maria's favorite color is yellow.","Rain is in the forecast.","Maria is late for school.","Maria lost her phone."], a:1, ex:"Checking the weather, frowning, and grabbing a raincoat are clues that rain is expected."},
+  {id:"k4", t:"mc", kind:"i", q:"What can you infer from this text?", quote:"In winter, Florida manatees crowd into warm natural springs and the warm water near power plants. Water colder than about 68°F can make them sick.",
+   c:["Manatees need warm water to stay healthy in winter.","Manatees enjoy watching the power plants.","Manatees only live near power plants.","Manatees are not found in Florida."], a:0, ex:"The text explains that cold water makes them sick and they gather in warm places, so you can infer they need warm water to stay healthy."},
+  {id:"k5", t:"mc", q:"A student wrote: \"I inferred that sixth graders should get 9 to 12 hours of sleep.\" What is wrong with this answer?",
+   c:["Nothing. It is a strong inference.","The sleep article states this directly, so it is explicit, not an inference.","The article says sixth graders need 5 hours of sleep.","The student should have used a quote from the food article."], a:1, ex:"If the article says it directly, it's explicit. An inference is something the text hints at but does not say."},
+  {id:"k6", t:"mc", q:"A student wrote: \"Kids eat ultra-processed foods because they are lazy.\" What is the BIGGEST problem with this inference?",
+   c:["It is too long.","It is not supported by clues in the text.","It uses a quote.","It is explicitly stated in the article."], a:1, ex:"Nothing in the article says kids are lazy. A strong inference must be backed by text evidence, not opinion."},
+  {id:"k7", t:"mc", q:"Which sentence starter shows that a reader is making an INFERENCE?",
+   c:["\"The text states…\"","\"According to the article…\"","\"This suggests that…\"","\"In paragraph 2, it says…\""], a:2, ex:"\"This suggests that…\" signals an idea the reader figured out. The others introduce explicit information."},
+  {id:"k8", t:"mc", kind:"i", q:"Read this advertisement. What does the ad IMPLY?", quote:"ZOOM FIZZ ⚡ The drink champions choose! (A photo shows a famous basketball star holding the can.)",
+   c:["The drink contains a lot of sugar.","Drinking Zoom Fizz will help you be a winner like the athlete.","Zoom Fizz is sold only in Florida.","The basketball star does not like the drink."], a:1, ex:"The ad never says \"this will make you a champion,\" but the athlete photo and the word \"champions\" suggest it. Ads often send implicit messages."},
+  {id:"k9", t:"mc", q:"Why might an author IMPLY an idea instead of stating it directly?",
+   c:["To make the reader think and reach the conclusion on their own","Because the author forgot to include it","To make the article shorter","Because implied ideas are always false"], a:0, ex:"When readers figure out an idea themselves, it often feels more powerful and convincing."},
+  {id:"k10", t:"mc", kind:"i", q:"Which piece of evidence BEST supports the inference that screens can make it hard to fall asleep?",
+   c:["\"Summer is a time for late-night movies, sleepovers, and sleeping in.\"","\"Turn off phones, tablets, and video games at least 30 minutes before bed, because the bright light from screens can trick your brain into staying awake.\"","\"Getting sunlight in the morning can also help reset your body's clock.\"","\"Teens ages 13 to 18 need 8 to 10 hours.\""], a:1, ex:"This sentence connects screen light directly to staying awake. It is the strongest evidence."}
+ ]}
+};
+
+/* Shuffle MC choices once with a fixed seed (same order for every student) */
+(function(){ let seed = 3110; const rnd = () => (seed = (seed*9301 + 49297) % 233280) / 233280;
+  Object.values(SETS).forEach(set => set.qs.forEach(q => { if(q.t !== "mc") return;
+    const idx = q.c.map((_,j) => j);
+    for(let k = idx.length-1; k > 0; k--){ const r = Math.floor(rnd()*(k+1)); [idx[k],idx[r]] = [idx[r],idx[k]]; }
+    q.c = idx.map(j => q.c[j]); q.a = idx.indexOf(q.a); }));
+})();
+
+/* ===================== STATIONS ===================== */
+const STATIONS = [
+ ["learn","📘","Learn"],["a1","😴","Article 1"],["a2","🍟","Article 2"],["compare","🔗","Compare"],
+ ["write","✍️","Write"],["info","🎨","Infographic"],["check","📝","Final Check"],["report","🏆","My Report"]
+];
+
+/* ===================== STATE ===================== */
+let state = null;
+function fresh(n){ return {name:n, st:"learn", card:0, sort:{}, vocab:{}, revealed:{}, qi:{a1:0,a2:0,compare:0,check:0}, ans:{}, pend:{}, txt:{}, sr:{},
+  level:"starter", frame:{}, essay:"", checks:{}, info:{title:"Reading Between the Lines", e1:"", i1:"", e2:"", i2:"", take:"", ei:"✅", ii:"💡"}, started:Date.now(), finished:null}; }
+function skey(n){ return STORE + n.trim().toLowerCase(); }
+function save(){ if(!state) return; try{ localStorage.setItem(skey(state.name), JSON.stringify(state)); localStorage.setItem(STORE+"last", state.name); }catch(e){} }
+function loadFor(n){ try{ const s = localStorage.getItem(skey(n)); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+function lastName(){ try{ return localStorage.getItem(STORE+"last") || ""; }catch(e){ return ""; } }
+
+/* ===================== SPEECH ===================== */
+let voiceMode = "female", rate = 0.95, flip = false, token = 0;
+const FEM = [/google us english/i,/samantha/i,/\bava\b/i,/allison/i,/susan/i,/aria/i,/jenny/i,/michelle/i,/zira/i,/nicky/i,/female/i];
+const MAL = [/aaron/i,/\bguy\b/i,/christopher/i,/\beric\b/i,/david/i,/\bmark\b/i,/\bevan\b/i,/\btom\b/i,/fred/i,/\balex\b/i,/\bmale\b/i];
+function usVoices(){ try{ return speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang)); }catch(e){ return []; } }
+function pick(list){ const vs = usVoices(); for(const re of list){ const v = vs.find(x => re.test(x.name)); if(v) return v; } return null; }
+function chooseVoice(){ let m = voiceMode; if(m === "mixed"){ flip = !flip; m = flip ? "female" : "male"; }
+  const vs = usVoices();
+  if(m === "male") return pick(MAL) || vs.find(v => !FEM.some(r => r.test(v.name))) || pick(FEM) || vs[0] || null;
+  return pick(FEM) || vs[0] || null; }
+function cleanSpeech(t){ return String(t).replace(/ELA\.[A-Z0-9.]+/g,"").replace(/[“”"]/g,"").replace(/_{2,}/g," blank ").replace(/—/g,", ").replace(/°F/g," degrees").replace(/\s+/g," ").trim(); }
+function chunk(t){ return (t.match(/[^.!?]+[.!?]+["')]*|[^.!?]+$/g) || [t]).map(s => s.trim()).filter(Boolean); }
+function setSpeaking(on){ document.getElementById("stopBtn").classList.toggle("show", on); }
+function clearHL(){ document.querySelectorAll(".para.reading").forEach(e => e.classList.remove("reading")); }
+function stopSpeech(){ token++; try{ speechSynthesis.cancel(); }catch(e){} setSpeaking(false); clearHL(); }
+function speak(items){
+  if(typeof items === "string") items = [{text:items}];
+  if(!("speechSynthesis" in window)){ alert("Read aloud is not available on this browser."); return; }
+  stopSpeech();
+  const my = ++token, voice = chooseVoice(), queue = [];
+  items.forEach(it => chunk(cleanSpeech(it.text)).forEach((c,j) => queue.push({c, el: j===0 ? (it.el||null) : undefined})));
+  let k = 0;
+  const next = () => { if(my !== token) return;
+    if(k >= queue.length){ setSpeaking(false); clearHL(); return; }
+    const q = queue[k++], u = new SpeechSynthesisUtterance(q.c);
+    if(voice){ u.voice = voice; u.lang = voice.lang; } else u.lang = "en-US";
+    u.rate = rate;
+    u.onstart = () => { if(q.el !== undefined){ clearHL(); if(q.el){ q.el.classList.add("reading"); q.el.scrollIntoView({block:"nearest",behavior:"smooth"}); } } };
+    u.onend = next; u.onerror = next; speechSynthesis.speak(u); };
+  setSpeaking(true); setTimeout(next, 80);
+}
+try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; }catch(e){}
+document.getElementById("voiceSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  voiceMode = b.dataset.v; flip = false; document.querySelectorAll("#voiceSeg button").forEach(x => x.classList.toggle("on", x === b));
+  try{ localStorage.setItem(STORE+"voice", voiceMode); }catch(e){} });
+document.getElementById("rateSeg").addEventListener("click", e => { const b = e.target.closest("button"); if(!b) return;
+  rate = parseFloat(b.dataset.r); document.querySelectorAll("#rateSeg button").forEach(x => x.classList.toggle("on", x === b)); });
+try{ const v = localStorage.getItem(STORE+"voice"); if(v){ voiceMode = v; document.querySelectorAll("#voiceSeg button").forEach(x => x.classList.toggle("on", x.dataset.v === v)); } }catch(e){}
+
+/* ===================== HELPERS ===================== */
+const app = document.getElementById("app");
+const L = "ABCD";
+function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function showPop(t){ const d = document.createElement("div"); d.className = "pop"; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1200); }
+function keepScroll(fn){ const y = window.scrollY; fn(); window.scrollTo(0,y); }
+function go(st){ state.st = st; save(); render(); window.scrollTo(0,0); }
+function setDone(key){ const set = SETS[key]; return set.qs.every(q => state.ans[q.id] || state.sr[q.id]); }
+function stationDone(k){
+  if(k === "learn") return state.card >= LESSON.length - 1 && SORT.every((_,i) => state.sort[i]);
+  if(SETS[k]) return setDone(k);
+  if(k === "write") return (state.level === "starter" ? Object.values(state.frame).filter(v => v && v.trim()).length >= 6 : state.essay.trim().length > 150);
+  if(k === "info") return ["e1","i1","e2","i2","take"].every(f => state.info[f] && state.info[f].trim());
+  if(k === "report") return !!state.finished;
+  return false;
+}
+function stationsHTML(){
+  return `<div class="stations noprint">${STATIONS.map(s => `<button class="st ${s[0] === state.st ? "now" : stationDone(s[0]) ? "done" : ""}" onclick="go('${s[0]}')"><span class="ic">${stationDone(s[0]) && s[0] !== state.st ? "✅" : s[1]}</span>${s[2]}</button>`).join("")}</div>`;
+}
+function nextStation(){ const i = STATIONS.findIndex(s => s[0] === state.st); if(i < STATIONS.length-1) go(STATIONS[i+1][0]); }
+function revealEx(id){ state.revealed[id] = 1; save(); const el = document.getElementById(id); el.classList.add("show");
+  const txt = {r1:"Explicit: Dinner is at 6.", r2:"Implicit: The clue word again tells you that you were late to dinner before.",
+    t1:"Explicit: The line was very long. The pizza was gone by 11:45. I can point to these words.", t2:"Clues: long line, and pizza ran out early. What I know: Food runs out when lots of people want it. Inference: Pizza day is very popular at this school."}[id];
+  if(txt) speak(txt); }
+
+/* ===================== RENDER ===================== */
+function render(){
+  stopSpeech();
+  if(!state) return renderStart();
+  const f = {learn:renderLearn, a1:()=>renderSet("a1"), a2:()=>renderSet("a2"), compare:()=>renderSet("compare"), write:renderWrite, info:renderInfo, check:()=>renderSet("check"), report:renderReport}[state.st];
+  (f || renderLearn)();
+}
+
+function renderStart(){
+  app.innerHTML = `<div class="card center">
+    <div style="font-size:3rem">🔎📰</div>
+    <h2>Reading Between the Lines</h2>
+    <p>Authors tell you some things <span class="exp">directly</span>. Other things they <span class="imp">hint at</span> and trust you to figure out. Today you'll learn to find <strong>both</strong> in two articles about kids' health.</p>
+    <div class="row"><input type="text" id="nm" style="max-width:380px" placeholder="First name and last initial" value="${esc(lastName())}" autocomplete="off">
+    <button class="big" onclick="startWith()">Start ➜</button></div>
+    <div class="tip">📚 <strong>What you'll do:</strong> Learn → Read 2 articles → Compare → Write → Make an infographic → Final check<br>
+    🔊 Press any speaker button to hear it read aloud. Your work saves automatically on this device.</div>
+    <button class="speak" onclick="speak('Reading Between the Lines. Authors tell you some things directly. Other things they hint at and trust you to figure out. Today you will learn to find both in two articles about kids health. Type your name in the box, then press Start. Press any speaker button to hear words read aloud. Your work saves automatically.')">🔊 Read to me</button>
+  </div>`;
+  document.getElementById("nm").addEventListener("keydown", e => { if(e.key === "Enter") startWith(); });
+}
+function startWith(){ const n = document.getElementById("nm").value.trim();
+  if(n.length < 2){ speak("Please type your name first."); return; }
+  state = loadFor(n) || fresh(n); save(); render(); }
+
+/* ---------- LEARN ---------- */
+function renderLearn(){
+  const c = state.card, card = LESSON[c];
+  const blocked = card.sort && !SORT.every((_,k) => state.sort[k]);
+  app.innerHTML = stationsHTML() + `<div class="card center">
+    <div class="row between"><span class="muted" style="font-weight:800">📘 Lesson ${c+1} of ${LESSON.length}</span>
+      <button class="speak" onclick="speak(LESSON[${c}].say)">🔊 Read this to me</button></div>
+    <div class="lessonbar">${LESSON.map((_,k) => `<span class="${k <= c ? "on" : ""}"></span>`).join("")}</div>
+    <h2>${esc(card.title)}</h2>${card.html}
+    ${blocked ? `<p class="muted" style="font-size:.9rem">Sort all four statements to keep going.</p>` : ""}
+    <div class="nav"><button class="ghost" onclick="state.card--;save();render()" ${c === 0 ? "disabled" : ""}>⬅ Back</button>
+      ${c < LESSON.length-1 ? `<button class="big" onclick="state.card++;save();render();window.scrollTo(0,0)">Next ➜</button>`
+        : `<button class="big yellow" onclick="go('a1')" ${blocked ? "disabled" : ""}>Read Article 1 😴</button>`}</div>
+  </div>`;
+  Object.keys(state.revealed).forEach(id => { const el = document.getElementById(id); if(el) el.classList.add("show"); });
+  if(card.vocab) renderVocab();
+  if(card.sort) renderSort();
+}
+function renderVocab(){
+  document.getElementById("vocab").innerHTML = VOCAB.map((v,k) => `<div><button class="flip ${state.vocab[k] ? "open" : ""}" onclick="flipCard(${k})">
+    <div class="front">${esc(v[0])}</div><div class="back">${esc(v[1])}</div>${state.vocab[k] ? "" : `<div class="muted" style="font-size:.85rem">Tap to flip 👆</div>`}</button></div>`).join("");
+}
+function flipCard(k){ state.vocab[k] = !state.vocab[k]; save(); renderVocab(); if(state.vocab[k]) speak(VOCAB[k][0] + ". " + VOCAB[k][1]); }
+function renderSort(){
+  document.getElementById("sortbox").innerHTML = SORT.map((s,k) => { const r = state.sort[k], cls = r ? (r === s.a ? "ok" : "no") : "";
+    return `<div class="sortitem ${cls}"><span><strong>"${esc(s.t)}"</strong></span>
+     ${r ? `<span style="font-weight:800">${r === s.a ? "✅" : "❌"} ${s.a === "e" ? '<span class="tag e">Explicit</span>' : '<span class="tag i">Implicit</span>'}</span><div class="why">${esc(s.why)}</div>`
+         : `<span class="row" style="gap:6px"><button class="speak sm" onclick="speak(SORT[${k}].t)">🔊</button><button class="pill" onclick="sortPick(${k},'e')">✅ Explicit</button><button class="pill o" onclick="sortPick(${k},'i')">💡 Implicit</button></span>`}</div>`; }).join("");
+}
+function sortPick(k,v){ state.sort[k] = v; save(); keepScroll(renderLearn); speak((v === SORT[k].a ? "Correct! " : "Not quite. ") + SORT[k].why); }
+
+/* ---------- ARTICLES ---------- */
+let viewArt = null;
+function articleHTML(key, evActive){
+  const A = ARTICLES[key];
+  let h = `<div class="art ${evActive ? "evmode" : ""}"><p class="atitle">${esc(A.title)}</p><div class="byline">${esc(A.byline)}</div>`;
+  A.p.forEach((p,i) => {
+    if(p.h) h += `<h4>${esc(p.h)}</h4>`;
+    h += `<div class="para" id="${key}-p${i}"><span class="num">${i+1}</span><div><p>${p.s.map((s,j) => `<span class="s" id="${key}-${i}-${j}" onclick="evPick('${key}-${i}-${j}')">${esc(s)}</span>`).join(" ")}</p>
+      <button class="speak sm" onclick="readPara('${key}',${i})">🔊 Paragraph ${i+1}</button></div></div>`;
+  });
+  return h + `</div>`;
+}
+function readPara(key,i){ const p = ARTICLES[key].p[i]; speak([{text:(p.h ? p.h + ". " : "") + p.s.join(" "), el:document.getElementById(key+"-p"+i)}]); }
+function readArticle(key){ const A = ARTICLES[key]; const items = [{text:A.title + "."}];
+  A.p.forEach((p,i) => items.push({text:(p.h ? p.h + ". " : "") + p.s.join(" "), el:document.getElementById(key+"-p"+i)})); speak(items); }
+
+/* ---------- QUESTION SETS ---------- */
+function renderSet(key){
+  const set = SETS[key], i = state.qi[key], q = set.qs[i];
+  const hasArt = set.arts.length > 0;
+  if(hasArt && (!viewArt || !set.arts.includes(viewArt))) viewArt = q.art || set.arts[0];
+  if(q.t === "ev") viewArt = q.art;
+  const done = state.ans[q.id], srDone = state.sr[q.id];
+  const auto = set.qs.filter(x => x.t !== "sr"), right = auto.filter(x => state.ans[x.id] && state.ans[x.id].ok).length;
+  const doneCount = set.qs.filter(x => state.ans[x.id] || state.sr[x.id]).length;
+  const dots = set.qs.map((x,k) => { let c = "dot"; const a = state.ans[x.id];
+    if(a) c += a.ok ? " right" : " wrong"; else if(state.sr[x.id]) c += " wrote"; if(k === i) c += " cur";
+    return `<button class="${c}" onclick="jumpQ('${key}',${k})">${k+1}</button>`; }).join("");
+  const kindTag = q.kind ? (q.kind === "e" ? `<span class="tag e">✅ Explicit</span>` : `<span class="tag i">💡 Implicit</span>`) : "";
+  let body = "";
+  if(q.t === "mc"){
+    const sel = done ? done.sel : state.pend[q.id];
+    body = `<div class="choices">${q.c.map((c,j) => { let cls = "choice";
+      if(done){ if(j === q.a) cls += " isright"; else if(j === sel) cls += " iswrong"; } else if(j === sel) cls += " sel";
+      return `<button class="${cls}" ${done ? "disabled" : ""} onclick="pickMC('${key}',${j})"><span class="let">${L[j]}</span><span>${esc(c)}</span></button>`; }).join("")}</div>
+      ${done ? "" : `<button class="big orange" onclick="lockQ('${key}')" ${sel === undefined ? "disabled" : ""}>🔒 Lock In Answer</button>`}`;
+  } else if(q.t === "ev"){
+    const sel = done ? done.sel : state.pend[q.id];
+    body = `<p class="muted" style="margin:4px 0">👆 Tap a sentence in the article. It will appear in the evidence box below.</p>
+      <button class="ghost togglep" style="margin:4px 0" onclick="openPanel()">📖 Open the article</button>
+      <div class="evbox ${sel ? "" : "empty"}">${sel ? "📌 \"" + esc(sentText(sel)) + "\"" : "Your evidence will appear here…"}</div>
+      ${done ? "" : `<button class="big orange" onclick="lockQ('${key}')" ${sel ? "" : "disabled"}>🔒 Lock In Evidence</button>`}`;
+  } else {
+    const t = state.txt[q.id] || "";
+    body = `<div class="tip" style="margin:8px 0"><strong>✏️ Sentence starter:</strong> ${esc(q.starter)}
+        <div class="row" style="margin-top:6px"><button class="speak sm" onclick="speak(SETS['${key}'].qs[${i}].starter)">🔊 Hear starter</button>
+        <button class="ghost" style="padding:3px 10px;font-size:.85rem" onclick="useStarter('${key}')">Use this starter</button></div></div>
+      <textarea id="srbox" placeholder="Type your answer here. Use evidence from the text!" oninput="state.txt['${q.id}']=this.value;save();srCount()">${esc(t)}</textarea>
+      <div class="row between" style="margin-top:6px"><span class="muted" id="srcount" style="font-size:.85rem"></span>
+        <button class="big" id="srbtn" onclick="submitSR('${key}')">${srDone ? "✔ Update my answer" : "Submit my answer"}</button></div>`;
+  }
+  let fb = "";
+  if(done){
+    const corr = q.t === "ev" ? `<div>A strong answer: <em>"${esc(sentText(q.accept[0]))}"</em></div>` : `<div>The correct answer: <strong>${L[q.a]}</strong></div>`;
+    fb = `<div class="fb ${done.ok ? "good" : "bad"}"><strong>${done.ok ? "✅ Correct!" : "❌ Not quite."}</strong>${done.ok ? "" : corr}<div>${esc(q.ex)}</div>
+      <button class="speak sm" style="margin-top:6px" onclick="readFB('${key}')">🔊 Read explanation</button></div>`;
+  } else if(srDone){
+    fb = `<div class="fb info"><strong>📝 Answer saved!</strong> Compare yours to this sample answer. Did you use evidence from the text?
+      <div class="quote" style="font-style:normal">${esc(q.sample)}</div>
+      <button class="speak sm" onclick="speak(SETS['${key}'].qs[${i}].sample)">🔊 Read sample</button></div>`;
+  }
+  const all = doneCount === set.qs.length, last = i === set.qs.length - 1;
+  const nextBtn = (done || srDone) ? (all ? `<button class="big yellow" onclick="${key === "check" ? "finishCheck()" : "nextStation()"}">${key === "check" ? "See my report 🏆" : "Next station ➜"}</button>`
+      : last ? `<button class="big" onclick="jumpQ('${key}',firstOpen('${key}'))">Go to unanswered ➜</button>`
+      : `<button class="big" onclick="jumpQ('${key}',${i+1})">Next question ➜</button>`) : "";
+  const intro = key === "a1" || key === "a2" ? `<div class="tip noprint" style="margin-top:0">📖 <strong>Read the article first</strong> (press 🔊 Read article to listen). Then answer the questions. You get <strong>one try</strong> on multiple-choice and evidence questions.</div>`
+    : key === "compare" ? `<div class="tip" style="margin-top:0">🔗 Use <strong>both</strong> articles. Switch between them with the tabs.</div>`
+    : `<div class="tip" style="margin-top:0">📝 <strong>Final Check:</strong> 10 questions on your own. One try each. Show what you know!</div>`;
+  const panel = hasArt ? `<aside class="card ppanel" id="pp">
+      <div class="tools">${set.arts.length > 1 ? `<div class="arttabs">${set.arts.map(a => `<button class="${a === viewArt ? "on" : ""}" onclick="viewArt='${a}';keepPanel(()=>renderSet('${key}'))">${esc(ARTICLES[a].short)}</button>`).join("")}</div>` : ""}
+        <button class="speak" onclick="readArticle('${viewArt}')">🔊 Read article</button>
+        <button class="ghost closep" onclick="closePanel()">✕ Close</button></div>
+      ${articleHTML(viewArt, q.t === "ev" && !done)}</aside>` : "";
+  app.innerHTML = stationsHTML() + `<div class="${hasArt ? "quizwrap" : ""}">${panel}
+    <section class="card ${hasArt ? "" : "center"}">
+      ${intro}
+      <div class="meter"><div style="width:${doneCount/set.qs.length*100}%"></div></div>
+      <div class="dots">${dots}</div>
+      <div class="qhead"><div class="qnum">${esc(set.label)} · Question ${i+1} of ${set.qs.length}</div><span class="score">⭐ ${right}/${auto.length}</span></div>
+      <div class="row" style="margin-bottom:4px"><button class="speak" onclick="readQ('${key}')">🔊 Read question${q.t === "mc" ? " &amp; answers" : ""}</button>
+        ${hasArt && q.t !== "ev" ? `<button class="ghost togglep" style="padding:4px 10px;font-size:.85rem" onclick="openPanel()">📖 Show article</button>` : ""} ${kindTag}</div>
+      <p class="stem">${esc(q.q)}</p>
+      ${q.quote ? `<div class="quote">"${esc(q.quote)}"</div>` : ""}
+      ${body}${fb}
+      <div class="nav"><button class="ghost" onclick="jumpQ('${key}',${i-1})" ${i === 0 ? "disabled" : ""}>⬅ Back</button>${nextBtn}</div>
+    </section></div>`;
+  if(q.t === "ev"){ const sel = done ? done.sel : state.pend[q.id];
+    if(done){ q.accept.forEach(id => { const e = document.getElementById(id); if(e) e.classList.add("evok"); }); if(!done.ok){ const e = document.getElementById(sel); if(e) e.classList.add("evbad"); } }
+    else if(sel){ const e = document.getElementById(sel); if(e) e.classList.add("evsel"); } }
+  if(q.t === "sr") srCount();
+}
+function openPanel(){ const p = document.getElementById("pp"); if(p) p.classList.add("open"); }
+function closePanel(){ const p = document.getElementById("pp"); if(p) p.classList.remove("open"); stopSpeech(); }
+function keepPanel(fn){ const pp = document.getElementById("pp"), st = pp ? pp.scrollTop : 0, open = pp && pp.classList.contains("open"); keepScroll(fn); const n = document.getElementById("pp"); if(n){ n.scrollTop = st; if(open) n.classList.add("open"); } }
+function curQ(key){ return SETS[key].qs[state.qi[key]]; }
+function pickMC(key,j){ const q = curQ(key); if(state.ans[q.id]) return; state.pend[q.id] = j; save(); keepPanel(() => renderSet(key)); }
+function evPick(id){
+  if(!SETS[state.st]) return; const key = state.st, q = curQ(key);
+  if(q.t !== "ev" || state.ans[q.id] || !id.startsWith(q.art)) return;
+  state.pend[q.id] = id; save(); keepPanel(() => renderSet(key));
+  const p = document.getElementById("pp"); if(p && window.innerWidth <= 860) setTimeout(() => p.classList.remove("open"), 350);
+}
+function lockQ(key){
+  const q = curQ(key), sel = state.pend[q.id]; if(sel === undefined || state.ans[q.id]) return;
+  const ok = q.t === "ev" ? q.accept.includes(sel) : sel === q.a;
+  state.ans[q.id] = {sel, ok}; delete state.pend[q.id]; save();
+  if(ok) showPop(["Nice! ⭐","You got it!","Great reading!","Evidence found! 📌"][Math.floor(Math.random()*4)]);
+  keepPanel(() => renderSet(key));
+}
+function readQ(key){ const q = curQ(key); let t = q.q + " "; if(q.quote) t += "Here is the text. " + q.quote + " ";
+  if(q.t === "mc") q.c.forEach((c,j) => t += " Choice " + L[j] + ". " + c + (/[.!?"]$/.test(c) ? " " : ". "));
+  if(q.t === "ev") t += "Tap a sentence in the article. Then lock in your evidence.";
+  if(q.t === "sr") t += "Type your answer in the box. You can use the sentence starter.";
+  speak(t); }
+function readFB(key){ const q = curQ(key), a = state.ans[q.id];
+  speak((a.ok ? "Correct! " : "Not quite. " + (q.t === "ev" ? "A strong answer is: " + sentText(q.accept[0]) + " " : "The correct answer is " + L[q.a] + ". ")) + q.ex); }
+function useStarter(key){ const q = curQ(key); const b = document.getElementById("srbox"); if(!b.value.trim()){ b.value = q.starter.replace(/_{3,}/g,"___"); state.txt[q.id] = b.value; save(); } b.focus(); srCount(); }
+function srCount(){ const b = document.getElementById("srbox"); if(!b) return; const w = b.value.trim().split(/\s+/).filter(x => x && x !== "___").length;
+  document.getElementById("srcount").textContent = w + " words" + (w < 12 ? " · write at least 12 words" : " ✔");
+  const btn = document.getElementById("srbtn"); btn.disabled = w < 12 || /_{3}/.test(b.value); }
+function submitSR(key){ const q = curQ(key); const v = (state.txt[q.id] || "").trim(); if(v.split(/\s+/).length < 12) return;
+  if(/_{3}/.test(v)){ speak("Fill in all the blanks first."); return; }
+  state.sr[q.id] = true; save(); showPop("Saved! 📝"); keepPanel(() => renderSet(key)); }
+function jumpQ(key,k){ if(k < 0 || k >= SETS[key].qs.length) return; state.qi[key] = k; save(); render(); window.scrollTo(0,0); }
+function firstOpen(key){ const qs = SETS[key].qs; for(let k = 0; k < qs.length; k++) if(!state.ans[qs[k].id] && !state.sr[qs[k].id]) return k; return 0; }
+function finishCheck(){ state.finished = state.finished || Date.now(); save(); go("report"); }
+
+/* ---------- WRITE ---------- */
+const FRAME = [
+ {h:"Introduction", parts:["Both articles are about kids' health. One is about ",{k:"f1",ph:"topic of article 1"}," and the other is about ",{k:"f2",ph:"topic of article 2"},". They both have ideas that are said directly (explicit) and ideas you have to figure out (implicit)."]},
+ {h:"Body", parts:["In the sleep article, the author says, \"",{k:"f3",ph:"exact quote"},"\" which is explicit because it tells you directly. "]},
+ {parts:["But I can infer that ",{k:"f4",ph:"your inference"}," because the article also says ",{k:"f5",ph:"clue from the text"},". That means it's implicit. "]},
+ {parts:["In the food article, the author explains, \"",{k:"f6",ph:"exact quote"},"\" which is an explicit detail. "]},
+ {parts:["From this, I can infer that ",{k:"f7",ph:"your inference"}," because the author hints that ",{k:"f8",ph:"clue from the text"},". "]},
+ {h:"Conclusion", parts:["It's important to understand both explicit and implicit meaning because ",{k:"f9",ph:"why it matters to you"},"."]}
+];
+function frameText(){ return FRAME.map(f => f.parts.map(p => typeof p === "string" ? p : (state.frame[p.k] || "____")).join("")).join("").replace(/\. (Body|In the sleep)/,". $1"); }
+function renderWrite(){
+  const lv = state.level;
+  const reqs = ["I explained what \"explicit\" and \"implicit\" mean in my own words.","I used at least one explicit AND one implicit example from EACH article.","I explained how the author's words or details help the reader make inferences.","I ended by telling why it matters to notice both kinds of meaning."];
+  let work = "";
+  if(lv === "starter"){
+    work = FRAME.map((f,fi) => `<div class="frame">${f.h ? `<span class="fl">${f.h}</span>` : ""}${f.parts.map(p => typeof p === "string" ? esc(p) : `<input type="text" placeholder="${esc(p.ph)}" value="${esc(state.frame[p.k] || "")}" oninput="state.frame['${p.k}']=this.value;save();updPrev()">`).join("")}</div>`).join("")
+      + `<h3 style="margin-top:14px">👀 My paragraph</h3><div class="preview" id="prev"></div>`;
+  } else {
+    const plan = lv === "onlevel"
+      ? `<ol style="margin:6px 0;padding-left:22px"><li><strong>Paragraph 1:</strong> Introduce the topic. Define "explicit" and "implicit."</li><li><strong>Paragraph 2:</strong> Give one explicit and one implicit example from EACH article.</li><li><strong>Paragraph 3:</strong> Explain why authors might imply information instead of stating it.</li><li><strong>Paragraph 4 (optional):</strong> Why does this skill matter for real life (news, ads, social media)?</li></ol>`
+      : `<p style="margin:4px 0">Go deeper! Include ideas about:</p><ul style="margin:4px 0;padding-left:22px"><li><strong>Author's purpose:</strong> How does the author's goal shape what is stated vs. implied?</li><li><strong>Tone:</strong> What can we infer about each author's attitude toward the issue?</li><li><strong>Audience:</strong> How do the authors expect readers to "read between the lines"?</li></ul>`;
+    const chips = ["The text states that","According to the article,","This suggests that","Readers can infer that","because the author writes,","In contrast,","Both articles"];
+    work = `<div class="tip">${plan}</div>
+      <div class="chips">${chips.map(c => `<button onclick="insertChip('${c.replace(/'/g,"")}')">+ ${esc(c)}</button>`).join("")}</div>
+      <textarea id="essay" style="min-height:260px" placeholder="Write 1–2 paragraphs here…" oninput="state.essay=this.value;save();essayCount()">${esc(state.essay)}</textarea>
+      <div class="muted" id="ecount" style="font-size:.85rem"></div>`;
+  }
+  app.innerHTML = stationsHTML() + `<div class="card center">
+    <div class="row between"><h2 style="margin:0">✍️ Writing: Reading Between the Lines</h2>
+      <button class="speak" onclick="speak('Writing task. Reading between the lines. Answer this question in one or two paragraphs: How do nonfiction authors communicate meaning both explicitly and implicitly? Your writing must: ' + ${JSON.stringify(reqs.join(" "))})">🔊 Read directions</button></div>
+    <p class="stem">How do nonfiction authors communicate meaning both <span class="exp">explicitly</span> and <span class="imp">implicitly</span>?</p>
+    <div style="margin:10px 0">${reqs.map((r,k) => `<label class="check"><input type="checkbox" ${state.checks[k] ? "checked" : ""} onchange="state.checks[${k}]=this.checked;save()">${esc(r)}</label>`).join("")}</div>
+    <h3>Choose your writing path:</h3>
+    <div class="lvl">
+      <button class="${lv === "starter" ? "on" : ""}" onclick="state.level='starter';save();render()">🌱 Sentence Frames</button>
+      <button class="${lv === "onlevel" ? "on" : ""}" onclick="state.level='onlevel';save();render()">📝 Paragraph Plan</button>
+      <button class="${lv === "challenge" ? "on" : ""}" onclick="state.level='challenge';save();render()">🚀 Challenge</button>
+    </div>
+    ${work}
+    <div class="row" style="margin-top:10px"><button class="speak" onclick="speak(state.level==='starter' ? frameText() : (state.essay || 'You have not written anything yet.'))">🔊 Read my writing to me</button>
+      <span class="muted" style="font-size:.85rem">Listening to your writing helps you catch mistakes!</span></div>
+    <div class="nav"><button class="ghost" onclick="go('compare')">⬅ Compare</button><button class="big yellow" onclick="nextStation()">Make my infographic 🎨</button></div>
+  </div>`;
+  if(lv === "starter") updPrev(); else essayCount();
+}
+function updPrev(){ const p = document.getElementById("prev"); if(p) p.textContent = frameText(); }
+function insertChip(c){ const t = document.getElementById("essay"); const s = t.selectionStart ?? t.value.length;
+  const add = (s > 0 && !/\s$/.test(t.value.slice(0,s)) ? " " : "") + c + " ";
+  t.value = t.value.slice(0,s) + add + t.value.slice(s); state.essay = t.value; save(); t.focus(); t.selectionStart = t.selectionEnd = s + add.length; essayCount(); }
+function essayCount(){ const t = document.getElementById("essay"); if(!t) return; const w = t.value.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById("ecount").textContent = w + " words" + (w < 80 ? " · aim for at least 80 words" : " ✔ great length!"); }
+
+/* ---------- INFOGRAPHIC ---------- */
+function renderInfo(){
+  const I = state.info;
+  const field = (k, lab, ph) => `<div><label>${lab}</label><input type="text" value="${esc(I[k])}" placeholder="${esc(ph)}" oninput="state.info['${k}']=this.value;save();updIG()"></div>`;
+  const icons = (k, opts) => `<div class="iconpick">${opts.map(o => `<button class="${I[k] === o ? "on" : ""}" onclick="state.info['${k}']='${o}';save();keepScroll(renderInfo)">${o}</button>`).join("")}</div>`;
+  app.innerHTML = stationsHTML() + `<div class="card center" style="max-width:900px">
+    <div class="row between noprint"><h2 style="margin:0">🎨 Create an Infographic</h2>
+      <button class="speak" onclick="speak('Create an infographic. Turn your ideas into a poster that helps others understand the difference between explicit and implicit meaning. Include a title, one explicit example and one implicit example from each article in your own words, icons, and a short takeaway message. Why does it matter to recognize what is explicit and what is implicit?')">🔊 Read directions</button></div>
+    <div class="noprint">
+      <p>Turn your ideas into a poster! Fill in the boxes and watch your infographic build below. Write examples <strong>in your own words</strong>.</p>
+      <div class="formgrid">
+        ${field("title","🏷️ Title","Reading Between the Lines")}
+        <div><label>Icons</label><div class="row" style="gap:14px"><span><span class="tag e">Explicit</span> ${icons("ei",["✅","💬","📢","📌"])}</span><span><span class="tag i">Implicit</span> ${icons("ii",["💡","💭","🔍","🧠"])}</span></div></div>
+        ${field("e1","😴 Sleep article: EXPLICIT","Something the article states directly")}
+        ${field("i1","😴 Sleep article: IMPLICIT","Something you can infer")}
+        ${field("e2","🍟 Food article: EXPLICIT","Something the article states directly")}
+        ${field("i2","🍟 Food article: IMPLICIT","Something you can infer")}
+      </div>
+      <div style="margin-top:10px"><label style="font-weight:800;font-size:.92rem">🎯 Takeaway message: Why does it matter to notice what's explicit vs. implicit?</label>
+        <input type="text" value="${esc(I.take)}" placeholder="Noticing both helps me…" oninput="state.info.take=this.value;save();updIG()"></div>
+    </div>
+    <div class="ig" id="ig"></div>
+    <div class="nav noprint"><button class="ghost" onclick="go('write')">⬅ Write</button>
+      <div class="row"><button class="ghost" onclick="window.print()">🖨️ Print</button><button class="big yellow" onclick="go('check')">Final Check 📝</button></div></div>
+  </div>`;
+  updIG();
+}
+function updIG(){ const I = state.info, g = document.getElementById("ig"); if(!g) return;
+  const v = (x, ph) => x && x.trim() ? esc(x) : `<span class="muted"><em>${ph}</em></span>`;
+  g.innerHTML = `<h2>${v(I.title,"Your title")}</h2><div class="sub">by ${esc(state.name)} · What the author <span class="exp">SAYS</span> vs. what I <span class="imp">INFER</span></div>
+    <div class="grid">
+      <div class="col"><h3>😴 Sleep Article</h3><div class="itm e">${I.ei} <strong>Explicit:</strong> ${v(I.e1,"explicit example")}</div><div class="itm i">${I.ii} <strong>Implicit:</strong> ${v(I.i1,"implicit example")}</div></div>
+      <div class="col"><h3>🍟 Food Article</h3><div class="itm e">${I.ei} <strong>Explicit:</strong> ${v(I.e2,"explicit example")}</div><div class="itm i">${I.ii} <strong>Implicit:</strong> ${v(I.i2,"implicit example")}</div></div>
+    </div>
+    <div class="take">🎯 ${v(I.take,"Your takeaway message")}</div>`; }
+
+/* ---------- REPORT ---------- */
+function allAuto(){ const out = []; ["a1","a2","compare","check"].forEach(k => SETS[k].qs.forEach((q,i) => { if(q.t !== "sr") out.push({k,q,i}); })); return out; }
+function renderReport(){
+  const autos = allAuto(), right = autos.filter(x => state.ans[x.q.id] && state.ans[x.q.id].ok).length, total = autos.length;
+  const chk = SETS.check.qs, chkRight = chk.filter(q => state.ans[q.id] && state.ans[q.id].ok).length;
+  const pct = Math.round(right/total*100);
+  let badge = "🔎", title = "Reader in Training!";
+  if(pct >= 90){ badge = "🏆"; title = "Master of Meaning!"; } else if(pct >= 75){ badge = "🌟"; title = "Between-the-Lines Pro!"; } else if(pct >= 55){ badge = "📚"; title = "Evidence Explorer!"; }
+  const srs = []; ["a1","a2","compare"].forEach(k => SETS[k].qs.forEach(q => { if(q.t === "sr") srs.push(q); }));
+  const missed = autos.filter(x => state.ans[x.q.id] && !state.ans[x.q.id].ok).map(x => SETS[x.k].label + " #" + (x.i+1));
+  const unanswered = autos.filter(x => !state.ans[x.q.id]).length;
+  const writing = state.level === "starter" ? frameText() : state.essay;
+  app.innerHTML = stationsHTML() + `<div class="card center" style="text-align:center">
+    <div class="badge">${badge}</div><h2>${title}</h2>
+    <div class="bigscore">${right} / ${total}</div>
+    <p style="margin:4px 0"><strong>${pct}%</strong> on scored questions · Final Check: <strong>${chkRight}/${chk.length}</strong></p>
+    <p class="muted">${esc(state.name)} · ${esc(new Date(state.finished || Date.now()).toLocaleString())}</p>
+    <div class="tip" style="text-align:left"><strong>👩‍🏫 Show your teacher this screen.</strong><br>
+      Skill: Explicit &amp; Implicit Meaning in Nonfiction (ELA.K12.EE.1.1)<br>
+      Scored questions: ${right}/${total} (${pct}%)${unanswered ? " · " + unanswered + " not answered yet" : ""}<br>
+      Missed: ${missed.length ? esc(missed.join(", ")) : "None! 🎉"}<br>
+      Written responses: ${srs.filter(q => state.sr[q.id]).length}/${srs.length} · Writing: ${stationDone("write") ? "✅" : "⏳"} · Infographic: ${stationDone("info") ? "✅" : "⏳"}</div>
+    <div class="row noprint" style="justify-content:center">
+      <button class="speak" onclick="speak('${title.replace(/'/g,"")} You got ${right} out of ${total} scored questions correct. Show your teacher this screen.')">🔊 Read my results</button>
+      <button class="ghost" onclick="copyResults()">📋 Copy my results</button><button class="ghost" onclick="window.print()">🖨️ Print my work</button></div>
+    <div style="text-align:left;margin-top:18px">
+      <h3>📝 My Written Responses</h3>
+      ${srs.map(q => `<div class="ritem t"><strong>${esc(q.q)}</strong><div>${state.txt[q.id] ? esc(state.txt[q.id]) : '<em class="muted">Not answered yet</em>'}</div></div>`).join("")}
+      <h3 style="margin-top:14px">✍️ My Writing</h3><div class="ritem t" style="white-space:pre-wrap">${writing && writing.replace(/_+/g,"").trim().length > 20 ? esc(writing) : '<em class="muted">Not written yet</em>'}</div>
+      <h3 style="margin-top:14px">🎨 My Infographic</h3><div class="ig" id="ig"></div>
+    </div></div>`;
+  updIG();
+  if(pct >= 55) confetti();
+}
+function copyResults(){ const autos = allAuto(), right = autos.filter(x => state.ans[x.q.id] && state.ans[x.q.id].ok).length;
+  const t = `${state.name} | Explicit & Implicit Meaning | ${right}/${autos.length} (${Math.round(right/autos.length*100)}%) | Final Check ${SETS.check.qs.filter(q => state.ans[q.id] && state.ans[q.id].ok).length}/10`;
+  try{ navigator.clipboard.writeText(t).then(() => showPop("Copied! 📋")); }catch(e){ prompt("Copy your results:", t); } }
+function confetti(){ const cv = document.getElementById("confetti"), ctx = cv.getContext("2d"); cv.width = innerWidth; cv.height = innerHeight;
+  const colors = ["#ffd93b","#3d63dd","#ff7a1a","#22874c","#1d2b64"];
+  const ps = Array.from({length:160}, () => ({x:Math.random()*cv.width, y:-20-Math.random()*cv.height*.5, r:5+Math.random()*6, c:colors[Math.floor(Math.random()*5)], vy:2+Math.random()*3, vx:-1.5+Math.random()*3, a:Math.random()*6}));
+  let f = 0; (function tick(){ ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p => { p.y += p.vy; p.x += p.vx; p.a += .1; ctx.fillStyle = p.c; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*.6); ctx.restore(); });
+    if(++f < 260) requestAnimationFrame(tick); else ctx.clearRect(0,0,cv.width,cv.height); })(); }
+
+/* ---------- TEACHER ---------- */
+function teacherReset(){ const pin = prompt("Teacher PIN:"); if(pin === null) return; if(pin !== TEACHER_PIN){ alert("Incorrect PIN."); return; }
+  const who = prompt("Type the student's name to reset (or ALL to reset every student on this device):", state ? state.name : ""); if(!who) return;
+  try{ if(who.trim().toUpperCase() === "ALL") Object.keys(localStorage).filter(k => k.startsWith(STORE)).forEach(k => localStorage.removeItem(k)); else localStorage.removeItem(skey(who)); }catch(e){}
+  state = null; render(); }
+function teacherKey(){
+  const pin = prompt("Teacher PIN:"); if(pin === null) return; if(pin !== TEACHER_PIN){ alert("Incorrect PIN."); return; }
+  const keyRows = ["a1","a2","compare","check"].map(k => SETS[k].qs.map((q,i) => `<tr><td>${esc(SETS[k].label)} #${i+1}</td><td>${esc(q.q)}${q.quote ? `<br><em>"${esc(q.quote)}"</em>` : ""}</td><td>${
+    q.t === "mc" ? `<strong>${L[q.a]}.</strong> ${esc(q.c[q.a])}` : q.t === "ev" ? `<strong>Tap evidence:</strong> ${q.accept.map(id => `"${esc(sentText(id))}"`).join("<br>or ")}` : `<em>Sample:</em> ${esc(q.sample)}`}</td></tr>`).join("")).join("");
+  document.getElementById("modalRoot").innerHTML = `<div class="modal" onclick="if(event.target===this)this.remove()"><div class="card">
+    <div class="row between"><h2 style="margin:0">👩‍🏫 Teacher Answer Key</h2><div class="row"><button class="ghost" onclick="window.print()">🖨️ Print</button><button class="big" onclick="document.querySelector('.modal').remove()">Close</button></div></div>
+    <h3 style="margin-top:12px">Standards (Florida B.E.S.T.)</h3>
+    <ul><li><strong>ELA.K12.EE.1.1</strong> Cite evidence to explain and justify reasoning.</li>
+    <li><strong>ELA.K12.EE.2.1</strong> Read and comprehend grade-level complex texts proficiently.</li>
+    <li><strong>ELA.6.R.2.2</strong> Analyze the central idea(s), implied or explicit, and its development throughout a text.</li>
+    <li><strong>ELA.6.C.1.4</strong> Write expository texts to explain and/or analyze information from multiple sources, using relevant information and a logical organizational pattern.</li></ul>
+    <h3>Big Question</h3><p>How do authors communicate both direct information and deeper meaning in nonfiction texts, and how can readers uncover both?</p>
+    <h3>Suggested pacing (two class periods)</h3>
+    <p><strong>Day 1 (about 45 min):</strong> Learn, Article 1, Article 2 · <strong>Day 2 (about 45 min):</strong> Compare, Write, Infographic, Final Check. Students can tap any station at the top to jump there.</p>
+    <h3>Answer Key</h3><table><tr><th>#</th><th>Question</th><th>Answer</th></tr>${keyRows}</table>
+    <h3>Explicit &amp; Implicit Examples (possible student responses)</h3>
+    <table><tr><th>Type</th><th>Article</th><th>Example</th><th>Explanation</th></tr>
+    <tr><td>Explicit</td><td>Sleep</td><td>"Children ages 6 to 12 get 9 to 12 hours of sleep every night."</td><td>Stated directly. No inference needed.</td></tr>
+    <tr><td>Implicit</td><td>Sleep</td><td>Students struggle to fall asleep early because summer habits shift their routines.</td><td>The text says bedtimes "shift later and later," suggesting it's hard to switch back.</td></tr>
+    <tr><td>Explicit</td><td>Food</td><td>"For kids and teens ages 1 to 18, that number rises to about 62 percent."</td><td>An exact statistic stated in the article.</td></tr>
+    <tr><td>Implicit</td><td>Food</td><td>Advertising influences how kids view processed foods.</td><td>Ads use cartoons and social media stars to make snacks "seem fun and cool."</td></tr>
+    <tr><td>Cross-text</td><td>Both</td><td>Everyday habits that are easy or fun aren't always the healthiest.</td><td>Late bedtimes and processed snacks are both convenient habits that affect health.</td></tr></table>
+    <h3>Sample Writing Responses</h3>
+    <p><strong>🌱 Developing (sentence frames):</strong> Both articles are about kids' health. One is about sleep and the other is about ultra-processed food. In the sleep article, the author says, "children ages 6 to 12 get 9 to 12 hours of sleep every night," which is explicit because it tells me the exact number. But I can infer that it's hard to do that after summer because the article says bedtimes "shift later and later." In the food article, the author says that for kids, "that number rises to about 62 percent," which is explicit. I can infer that ads make kids want these foods because they make snacks "seem fun and cool." It's important to understand both because it helps me know what the author says and what they want me to think about.</p>
+    <p><strong>📝 On-level:</strong> The authors of both articles use explicit facts and implicit ideas to help readers understand kids' health. The sleep article clearly states how many hours of sleep children need, but it also implies that summer routines make that goal hard to reach. The food article explicitly says that about 62 percent of kids' calories come from ultra-processed foods, while implying that advertising has a big effect on what kids choose. Recognizing what is stated and what is implied helps readers think carefully about how information is presented.</p>
+    <p><strong>🚀 Advanced:</strong> Both authors blend direct data with implied messages about young people's habits. In the sleep article, the explicit recommendation of 9 to 12 hours is paired with the implicit message that summer schedules make this difficult. Similarly, the food article's explicit 62 percent statistic hints at a larger issue: convenience, taste, and marketing often win over nutrition. By noticing the difference between what authors state and what they suggest, readers can better judge an author's purpose and tone.</p>
+    <h3>Common Misconceptions &amp; Coaching Prompts</h3>
+    <table><tr><th>Misconception</th><th>Example</th><th>Coaching prompt</th></tr>
+    <tr><td>Confusing explicit and implicit</td><td>"I inferred that kids should get 9 to 12 hours of sleep."</td><td>Does the article actually say that number? If so, it's not an inference. What does it hint at but not say?</td></tr>
+    <tr><td>Inference not supported by text</td><td>"Kids stay up late because they're lazy."</td><td>Where do you see that in the article? Can you find a sentence that supports your idea? If not, how can you revise it?</td></tr>
+    <tr><td>Vague response</td><td>"Because food is bad."</td><td>Be specific. What kind of food? What word does the author use? What do you learn about its ingredients or health risks?</td></tr>
+    <tr><td>Picking the teen number</td><td>Choosing 8 to 10 hours for sixth graders</td><td>Reread paragraph 2 carefully. Which age group are you in?</td></tr></table>
+    <h3>Teaching Notes</h3>
+    <ul><li><strong>Before:</strong> Review explicit, implicit, inference, and textual evidence. Model a think-aloud with a simple sentence (Lesson card 3). Have students brainstorm times they "read between the lines" in a text message, conversation, or ad.</li>
+    <li><strong>During:</strong> Students tap sentences as evidence. On paper, have them underline explicit information and circle implicit ideas. Check that inferences come from text clues, not opinion.</li>
+    <li><strong>After:</strong> Writing task with three paths (Sentence Frames, Paragraph Plan, Challenge), then the infographic. Consider a gallery walk of printed infographics.</li>
+    <li><strong>Extension:</strong> Analyze a real ad or PSA for explicit vs. implicit messages. Hold a mini-debate: Should companies be allowed to advertise unhealthy snacks to kids?</li></ul>
+    <p class="muted" style="font-size:.85rem">Article facts: sleep amounts from the American Academy of Sleep Medicine pediatric recommendations; diet statistics from CDC NCHS Data Brief No. 536 (August 2025). Activity structure adapted from a nonfiction explicit/implicit meaning classroom kit; articles are original and leveled for Grade 6.</p>
+  </div></div>`;
+}
+
+/* ---------- BOOT ---------- */
+(function(){ const n = lastName(); if(n){ const s = loadFor(n); if(s) state = s; } render(); })();
+</script>
+</body>
+</html>
